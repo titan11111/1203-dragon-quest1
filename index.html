@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRAGON QUEST I</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fc-bg: #000000;
+  --fc-panel: #1a1a2e;
+  --fc-surface: #0a0a1a;
+  --fc-border: #7878f8;
+  --fc-border2: #3838b8;
+  --fc-white: #fcfcfc;
+  --fc-yellow: #f8b800;
+  --fc-red: #e83800;
+  --fc-green: #00a800;
+  --fc-blue: #0058f8;
+  --fc-cyan: #00e8d8;
+  --fc-purple: #6844fc;
+  --fc-orange: #f87858;
+  --fc-gray: #888888;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--fc-bg);
+  color: var(--fc-white);
+  font-family: 'Press Start 2P', monospace;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+@keyframes fc-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+@keyframes fc-flash { 0%,100%{background:var(--fc-panel)} 50%{background:#3838b8} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+.blink { animation: fc-blink 1s step-end infinite; }
+
+#app {
+  width: 480px;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* ===== SCREEN BASE ===== */
+.screen { display: none; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ===== TITLE SCREEN ===== */
+#title-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+.title-logo {
+  border: 4px solid var(--fc-yellow);
+  box-shadow: 6px 6px 0 #000, inset 0 0 0 2px #000;
+  background: var(--fc-panel);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.title-logo .title-en {
+  color: var(--fc-yellow);
+  font-size: 11px;
+  letter-spacing: 3px;
+  display: block;
+  margin-bottom: 6px;
+}
+.title-logo .title-jp {
+  color: var(--fc-white);
+  font-size: 20px;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #000;
+}
+.title-logo .title-num {
+  color: var(--fc-cyan);
+  font-size: 14px;
+  margin-top: 6px;
+  letter-spacing: 4px;
+}
+.title-hero {
+  font-size: 32px;
+  margin: 12px 0;
+  animation: float 2s ease-in-out infinite;
+}
+.title-castle {
+  font-size: 16px;
+  letter-spacing: 4px;
+  color: var(--fc-gray);
+  margin-bottom: 24px;
+}
+.title-copy {
+  font-size: 7px;
+  color: var(--fc-gray);
+  line-height: 2;
+  margin-bottom: 20px;
+}
+.menu-box {
+  border: 3px solid var(--fc-border);
+  box-shadow: 4px 4px 0 #000;
+  background: var(--fc-panel);
+  padding: 16px 24px;
+  display: inline-block;
+  text-align: left;
+}
+.menu-item {
+  font-size: 9px;
+  padding: 6px 0;
+  cursor: pointer;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-item:hover, .menu-item.selected { color: var(--fc-yellow); }
+.menu-item .arrow { color: var(--fc-yellow); }
+
+/* ===== NAME INPUT ===== */
+#name-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.name-window {
+  border: 4px solid var(--fc-border);
+  box-shadow: 6px 6px 0 #000;
+  background: var(--fc-panel);
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+}
+.window-title {
+  color: var(--fc-yellow);
+  font-size: 9px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.name-display {
+  border: 3px solid var(--fc-white);
+  box-shadow: 3px 3px 0 #000;
+  background: #000;
+  padding: 10px 14px;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 16px;
+  min-height: 38px;
+}
+.kana-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+  margin-bottom: 12px;
+}
+.kana-btn {
+  background: var(--fc-surface);
+  border: 2px solid var(--fc-border2);
+  color: var(--fc-white);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 5px 2px;
+  cursor: pointer;
+  text-align: center;
+}
+.kana-btn:hover { background: var(--fc-border2); border-color: var(--fc-border); }
+.kana-btn:active { transform: translate(1px,1px); }
+.name-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.fc-btn {
+  font-family: 'Press Start 2P', monospace;
+  border: 3px solid var(--fc-white);
+  padding: 8px 14px;
+  font-size: 8px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+.fc-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
+.fc-btn-blue { background: var(--fc-blue); color: #fff; box-shadow: 4px 4px 0 #000; }
+.fc-btn-red  { background: var(--fc-red);  color: #fff; box-shadow: 4px 4px 0 #000; }
+.fc-btn-gold { background: var(--fc-yellow); color: #000; box-shadow: 4px 4px 0 #000; border-color: #000; }
+.fc-btn-green{ background: var(--fc-green); color: #fff; box-shadow: 4px 4px 0 #000; }
+.fc-btn-gray { background: var(--fc-surface); color: var(--fc-gray); box-shadow: 4px 4px 0 #000; border-color: var(--fc-border2); }
+
+/* ===== FIELD SCREEN ===== */
+#field-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 8px;
+}
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 3px solid var(--fc-border);
+  box-shadow: 3px 3px 0 #000;
+  background: var(--fc-panel);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 8px;
+}
+.field-loc { color: var(--fc-yellow); font-size: 7px; }
+.map-container {
+  border: 3px solid var(--fc-border);
+  box-shadow: 4px 4px 0 #000;
+  background: #000;
+  margin-bottom: 6px;
+  overflow: hidden;
+  position: relative;
+}
+#map-canvas { display: block; }
+.field-status {
+  border: 3px solid var(--fc-border);
+  box-shadow: 3px 3px 0 #000;
+  background: var(--fc-panel);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-size: 8px;
+}
+.stat-label { color: var(--fc-yellow); }
+.stat-val   { color: var(--fc-white); text-align: right; }
+.bar-row { grid-column: 1/-1; display: flex; gap: 2px; margin: 2px 0; }
+.bar-block { width: 100%; height: 12px; border: 1px solid #000; }
+.field-msg {
+  border: 3px solid var(--fc-white);
+  box-shadow: 3px 3px 0 #000;
+  background: #000;
+  padding: 10px 12px;
+  font-size: 8px;
+  line-height: 2.2;
+  min-height: 56px;
+  margin-bottom: 6px;
+  position: relative;
+}
+.field-msg::after {
+  content: '▼';
+  position: absolute;
+  bottom: 6px; right: 10px;
+  font-size: 7px;
+  color: var(--fc-yellow);
+  animation: fc-blink 0.8s step-end infinite;
+}
+.field-cmds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.dpad-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.dpad-btn {
+  font-family: 'Press Start 2P', monospace;
+  background: var(--fc-panel);
+  border: 3px solid var(--fc-border);
+  color: var(--fc-white);
+  font-size: 14px;
+  width: 44px; height: 44px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  display: flex; align-items: center; justify-content: center;
+}
+.dpad-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #000; }
+
+/* ===== BATTLE SCREEN ===== */
+#battle-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 8px;
+}
+.battle-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.battle-enemy-box {
+  border: 3px solid var(--fc-red);
+  box-shadow: 4px 4px 0 #000;
+  background: var(--fc-panel);
+  padding: 10px;
+  text-align: center;
+}
+.battle-hero-box {
+  border: 3px solid var(--fc-blue);
+  box-shadow: 4px 4px 0 #000;
+  background: var(--fc-panel);
+  padding: 10px;
+}
+.battle-name {
+  font-size: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.enemy-name { color: var(--fc-red); }
+.hero-name  { color: var(--fc-blue); }
+.enemy-sprite {
+  font-size: 40px;
+  display: block;
+  margin: 4px auto;
+  line-height: 1;
+}
+.battle-stat { font-size: 7px; color: var(--fc-yellow); margin: 2px 0; }
+.battle-stat span { color: var(--fc-white); }
+.battle-msg {
+  border: 3px solid var(--fc-white);
+  box-shadow: 3px 3px 0 #000;
+  background: #000;
+  padding: 10px 12px;
+  font-size: 8px;
+  line-height: 2.2;
+  min-height: 70px;
+  margin-bottom: 6px;
+  position: relative;
+}
+.battle-msg::after {
+  content: '▼';
+  position: absolute;
+  bottom: 6px; right: 10px;
+  font-size: 7px;
+  color: var(--fc-yellow);
+  animation: fc-blink 0.8s step-end infinite;
+}
+.battle-cmds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+/* ===== TOWN / SHOP ===== */
+#town-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.town-window {
+  border: 4px solid var(--fc-border);
+  box-shadow: 6px 6px 0 #000;
+  background: var(--fc-panel);
+  padding: 20px;
+  width: 100%;
+  max-width: 440px;
+}
+.town-sprite { font-size: 28px; text-align: center; margin: 8px 0; }
+.town-menu { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+
+/* ===== GAMEOVER / ENDING ===== */
+#gameover-screen, #ending-screen {
+  background: var(--fc-bg);
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+}
+.go-title { font-size: 22px; color: var(--fc-red); text-shadow: 4px 4px 0 #000; margin-bottom: 20px; }
+.end-title { font-size: 14px; color: var(--fc-yellow); text-shadow: 4px 4px 0 #000; margin-bottom: 20px; }
+.go-msg { font-size: 8px; line-height: 2.5; color: var(--fc-white); margin-bottom: 24px; }
+
+/* ===== LEVELUP OVERLAY ===== */
+#levelup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+#levelup-overlay.active { display: flex; }
+.levelup-box {
+  border: 4px solid var(--fc-yellow);
+  box-shadow: 8px 8px 0 #000;
+  background: var(--fc-panel);
+  padding: 24px;
+  text-align: center;
+  animation: fc-flash 0.5s step-end 3;
+}
+.lv-title { font-size: 14px; color: var(--fc-yellow); margin-bottom: 12px; }
+.lv-stats { font-size: 9px; line-height: 2.5; color: var(--fc-cyan); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===== TITLE ===== -->
+<div id="title-screen" class="screen active">
+  <div class="title-logo">
+    <span class="title-en">ENIX PRESENTS</span>
+    <div class="title-jp">DRAGON</div>
+    <div class="title-jp">QUEST</div>
+    <div class="title-num">I</div>
+  </div>
+  <div class="title-hero">🧙</div>
+  <div class="title-castle">🏰 🐉 🏚️</div>
+  <div class="title-copy">
+    THIS GAME IS DEDICATED TO<br>
+    ALL ADVENTURERS WHO DARE<br>
+    TO CHALLENGE THE DARKNESS.
+  </div>
+  <div class="menu-box">
+    <div class="menu-item selected" onclick="startNewGame()">
+      <span class="arrow">▶</span>ぼうけんをはじめる
+    </div>
+    <div class="menu-item" onclick="showCredits()">
+      <span class="arrow" style="opacity:0">▶</span>このゲームについて
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:7px;color:var(--fc-gray);">
+    ©1986 CHUNSOFT / ENIX (FAN REMAKE)
+  </div>
+</div>
+
+<!-- ===== NAME INPUT ===== -->
+<div id="name-screen" class="screen">
+  <div class="name-window">
+    <div class="window-title">ゆうしゃの なまえを いれてください</div>
+    <div class="name-display" id="name-display">＿＿＿＿</div>
+    <div class="kana-grid" id="kana-grid"></div>
+    <div class="name-actions">
+      <button class="fc-btn fc-btn-red" onclick="delChar()">← DEL</button>
+      <button class="fc-btn fc-btn-gold" onclick="confirmName()">けってい</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FIELD ===== -->
+<div id="field-screen" class="screen">
+  <div class="field-header">
+    <div class="field-loc" id="field-loc">🏰 たんてきじょう</div>
+    <div style="font-size:7px;color:var(--fc-cyan)">G:<span id="hdr-gold">0</span></div>
+  </div>
+  <div class="map-container">
+    <canvas id="map-canvas" width="464" height="260"></canvas>
+  </div>
+  <div class="dpad-row">
+    <button class="dpad-btn" onclick="move(0,-1)">▲</button>
+  </div>
+  <div class="dpad-row" style="margin-bottom:0">
+    <button class="dpad-btn" onclick="move(-1,0)">◀</button>
+    <button class="dpad-btn" onclick="interact()">✦</button>
+    <button class="dpad-btn" onclick="move(1,0)">▶</button>
+  </div>
+  <div class="dpad-row" style="margin-top:4px">
+    <button class="dpad-btn" onclick="move(0,1)">▼</button>
+  </div>
+  <div class="field-status">
+    <div class="stat-label">なまえ</div><div class="stat-val" id="f-name">-</div>
+    <div class="stat-label">Lv</div><div class="stat-val" id="f-lv">1</div>
+    <div class="stat-label" style="color:var(--fc-red)">HP</div>
+    <div class="stat-val"><span id="f-hp">15</span>/<span id="f-mhp">15</span></div>
+    <div class="bar-row" id="hp-bar-field"></div>
+    <div class="stat-label" style="color:var(--fc-blue)">MP</div>
+    <div class="stat-val"><span id="f-mp">5</span>/<span id="f-mmp">5</span></div>
+    <div class="bar-row" id="mp-bar-field"></div>
+    <div class="stat-label">EXP</div><div class="stat-val" id="f-exp">0</div>
+    <div class="stat-label" style="color:var(--fc-yellow)">つぎのLv</div><div class="stat-val" id="f-next">7</div>
+  </div>
+  <div class="field-msg" id="field-msg">ここは たんていきょうのしろ。<br>りゅうおうをたおしに ゆくがよい！</div>
+  <div class="field-cmds">
+    <button class="fc-btn fc-btn-gray" onclick="cmdTalk()">はなす</button>
+    <button class="fc-btn fc-btn-gray" onclick="cmdSearch()">しらべる</button>
+    <button class="fc-btn fc-btn-gray" onclick="cmdItem()">どうぐ</button>
+    <button class="fc-btn fc-btn-red" onclick="cmdStatus()">じょうたい</button>
+  </div>
+</div>
+
+<!-- ===== TOWN ===== -->
+<div id="town-screen" class="screen">
+  <div class="town-window">
+    <div class="window-title" id="town-title">🏘️ まち</div>
+    <div class="town-sprite" id="town-sprite">🏘️</div>
+    <div class="field-msg" id="town-msg" style="margin-bottom:12px">ようこそ まちへ！</div>
+    <div class="town-menu" id="town-menu"></div>
+  </div>
+</div>
+
+<!-- ===== BATTLE ===== -->
+<div id="battle-screen" class="screen">
+  <div class="battle-top">
+    <div class="battle-enemy-box">
+      <div class="battle-name enemy-name" id="b-enemy-name">スライム</div>
+      <span class="enemy-sprite" id="b-enemy-sprite">🟢</span>
+      <div class="battle-stat">HP: <span id="b-enemy-hp">10</span></div>
+    </div>
+    <div class="battle-hero-box">
+      <div class="battle-name hero-name" id="b-hero-name">ゆうしゃ</div>
+      <div class="battle-stat" style="font-size:8px;margin:6px 0">🧙</div>
+      <div class="battle-stat">HP: <span id="b-hero-hp">15</span>/<span id="b-hero-mhp">15</span></div>
+      <div class="bar-row" id="hp-bar-battle" style="margin:3px 0"></div>
+      <div class="battle-stat">MP: <span id="b-hero-mp">5</span>/<span id="b-hero-mmp">5</span></div>
+      <div class="bar-row" id="mp-bar-battle"></div>
+    </div>
+  </div>
+  <div class="battle-msg" id="battle-msg">モンスターが あらわれた！</div>
+  <div class="battle-cmds" id="battle-cmds">
+    <button class="fc-btn fc-btn-red" onclick="battleCmd('attack')">⚔️ たたかう</button>
+    <button class="fc-btn fc-btn-blue" onclick="battleCmd('spell')">✨ じゅもん</button>
+    <button class="fc-btn fc-btn-gold" onclick="battleCmd('item')">🎒 どうぐ</button>
+    <button class="fc-btn fc-btn-gray" onclick="battleCmd('run')">💨 にげる</button>
+  </div>
+</div>
+
+<!-- ===== GAMEOVER ===== -->
+<div id="gameover-screen" class="screen">
+  <div class="go-title blink">GAME OVER</div>
+  <div class="go-msg">
+    あなたは たおれて<br>しまいました…<br><br>
+    しかし あきらめるな！<br>
+    ゆうしゃよ ふたたび<br>
+    たちあがるのだ！
+  </div>
+  <button class="fc-btn fc-btn-blue" onclick="revive()">
+    ふっかつのじゅもん
+  </button>
+</div>
+
+<!-- ===== ENDING ===== -->
+<div id="ending-screen" class="screen">
+  <div class="end-title">🎉 おめでとう！</div>
+  <div style="font-size:28px;margin:10px 0">🐉💥🧙</div>
+  <div class="go-msg">
+    りゅうおうは たおされた！<br><br>
+    ゆうしゃよ、きみは<br>
+    せかいを すくった！<br><br>
+    ひかりが せかいを<br>
+    つつんだ……
+  </div>
+  <div style="font-size:7px;color:var(--fc-yellow);margin-bottom:20px">
+    ～ CONGRATULATIONS ～
+  </div>
+  <button class="fc-btn fc-btn-gold" onclick="showTitle()">
+    タイトルへ
+  </button>
+</div>
+
+<!-- ===== LEVELUP ===== -->
+<div id="levelup-overlay">
+  <div class="levelup-box">
+    <div class="lv-title blink">⭐ LEVEL UP！⭐</div>
+    <div class="lv-stats" id="lv-stats"></div>
+    <button class="fc-btn fc-btn-gold" style="margin-top:16px" onclick="closeLevelup()">OK</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const KANA = [
+  'あ','い','う','え','お',
+  'か','き','く','け','こ',
+  'さ','し','す','せ','そ',
+  'た','ち','つ','て','と',
+  'な','に','ぬ','ね','の',
+  'は','ひ','ふ','へ','ほ',
+  'ま','み','む','め','も',
+  'や','ゆ','よ','ら','り',
+  'る','れ','ろ','わ','を',
+  'ん','ー','！','？','　'
+];
+
+// Level table: [expNeeded, maxHP, maxMP, atk, def, agi]
+const LEVEL_TABLE = [
+  null,
+  [0,   15, 5,  5,  4,  4],   // Lv1
+  [7,   22, 8,  7,  6,  5],   // Lv2
+  [23,  30, 12, 10, 8,  6],   // Lv3
+  [47,  40, 16, 14, 11, 7],   // Lv4
+  [110, 52, 20, 18, 15, 8],   // Lv5
+  [220, 66, 25, 23, 18, 10],  // Lv6
+  [400, 82, 32, 29, 22, 12],  // Lv7
+  [700, 100,40, 36, 27, 15],  // Lv8 (final)
+];
+
+const ENEMIES = {
+  slime:    { name:'スライム',  sprite:'🟢', hp:8,  atk:4,  def:2, exp:2, gold:2,  area:[0,1,2] },
+  drakee:   { name:'ドラキー',  sprite:'🦇', hp:14, atk:7,  def:3, exp:4, gold:4,  area:[1,2,3] },
+  magician: { name:'まほうつかい',sprite:'🧝',hp:20, atk:11, def:5, exp:7, gold:8,  area:[2,3] },
+  knight:   { name:'まかいきし', sprite:'⚔️', hp:35, atk:18, def:10,exp:14,gold:16, area:[3,4] },
+  golem:    { name:'ゴーレム',   sprite:'🗿', hp:50, atk:24, def:16,exp:22,gold:24, area:[4] },
+  dragon:   { name:'ドラゴン',   sprite:'🐲', hp:65, atk:35, def:20,exp:40,gold:50, area:[5] },
+  ryuoh:    { name:'りゅうおう', sprite:'🐉', hp:120,atk:55, def:35,exp:0, gold:0,  area:[6] },
+};
+
+// MAP (0=grass,1=mountain,2=water,3=castle,4=town,5=cave,6=dungeon,9=ryuoh)
+const TILE = { GRASS:0, MOUNTAIN:1, WATER:2, CASTLE:3, TOWN:4, CAVE:5, DUNGEON:6, BOSS:9 };
+const TCOLORS = {
+  0:'#3a7a3a', 1:'#888888', 2:'#0040a0', 3:'#7878f8',
+  4:'#c8a030', 5:'#604020', 6:'#302010', 9:'#6800c8'
+};
+const TCHAR = {
+  0:'·', 1:'▲', 2:'≈', 3:'🏰', 4:'🏘', 5:'⛺', 6:'🌑', 9:'🐉'
+};
+const TENC = { 0:true, 6:true }; // encounter zones
+const TENC_LV = { 0:[0,1,2,3], 6:[4,5,6] }; // enemy area index per tile
+
+const MAP_W = 20, MAP_H = 13;
+const RAW_MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,3,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,1,0,0,1],
+  [1,0,0,0,4,0,0,0,0,2,2,0,0,0,0,0,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+  [1,0,0,0,0,0,5,0,0,0,0,0,0,1,0,0,1,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,0,0,0,0,0,0,0,0,0,6,6,6,6,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,6,9,6,6,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,6,6,6,6,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+];
+
+// Locations: [x, y, name, type, data]
+const LOCATIONS = {
+  '2,2': { type:'castle', name:'たんていきょうのしろ', npc:'おう', msg:'ゆうしゃよ！ りゅうおうを たおして せかいを すくうのじゃ！', heal:true },
+  '4,4': { type:'town', name:'がんてつのまち', shop:true, inn:true, msg:'ようこそ がんてつのまちへ！' },
+  '8,8': { type:'town', name:'ほのおのまち', shop2:true, inn:true, msg:'ほのおの まちへ ようこそ！' },
+  '6,6': { type:'cave', name:'まよいのどうくつ', msg:'あぶない！ あぶない！ おくには むしきのもんじゃが ひそんでいるぞ！' },
+  '14,10':{ type:'boss', name:'りゅうおうのしろ', msg:'きさま…ゆうしゃか！ ここにくるとは ちゅうぼうめ！' },
+};
+
+const SHOP1 = [
+  { name:'やくそう',   price:8,  type:'herb', desc:'HPを30かいふくする' },
+  { name:'どうのけん', price:60, type:'weapon', atk:10, desc:'こうげきがあがる' },
+  { name:'かわのたて', price:60, type:'armor',  def:8,  desc:'ぼうぎょがあがる' },
+];
+const SHOP2 = [
+  { name:'やくそう',     price:8,   type:'herb', desc:'HPを30かいふくする' },
+  { name:'てつのけん',   price:180, type:'weapon', atk:20, desc:'つよいけん' },
+  { name:'くさりかたびら',price:150, type:'armor', def:18, desc:'つよいよろい' },
+  { name:'まほうのたて', price:200, type:'armor', def:24, desc:'まほうのたて' },
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let G = {};
+
+function initGame(name) {
+  G = {
+    name: name || 'ゆうしゃ',
+    lv: 1, exp: 0,
+    hp: 15, mhp: 15,
+    mp: 5,  mmp: 5,
+    atk: 5, def: 4, agi: 4,
+    gold: 20,
+    items: [],
+    weapon: null, armor: null,
+    x: 2, y: 3,  // start south of castle
+    steps: 0,
+    inBattle: false,
+    currentEnemy: null,
+    battlePhase: 'select',
+    prevScreen: 'field',
+  };
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function renderBar(cur, max, fillC, emptyC) {
+  const b = 10, f = Math.round((cur/max)*b);
+  return Array.from({length:b}, (_,i) =>
+    `<div class="bar-block" style="background:${i<f?fillC:emptyC}"></div>`
+  ).join('');
+}
+function updateBars() {
+  const fhp = document.getElementById('hp-bar-field');
+  const fmp = document.getElementById('mp-bar-field');
+  const bhp = document.getElementById('hp-bar-battle');
+  const bmp = document.getElementById('mp-bar-battle');
+  const hb = renderBar(G.hp,G.mhp,'#e83800','#3c1010');
+  const mb = renderBar(G.mp,G.mmp,'#0058f8','#101030');
+  if(fhp) fhp.innerHTML = hb;
+  if(fmp) fmp.innerHTML = mb;
+  if(bhp) bhp.innerHTML = hb;
+  if(bmp) bmp.innerHTML = mb;
+}
+function updateFieldUI() {
+  document.getElementById('f-name').textContent = G.name;
+  document.getElementById('f-lv').textContent = G.lv;
+  document.getElementById('f-hp').textContent = G.hp;
+  document.getElementById('f-mhp').textContent = G.mhp;
+  document.getElementById('f-mp').textContent = G.mp;
+  document.getElementById('f-mmp').textContent = G.mmp;
+  document.getElementById('f-exp').textContent = G.exp;
+  const next = LEVEL_TABLE[G.lv+1];
+  document.getElementById('f-next').textContent = next ? next[0] : 'MAX';
+  document.getElementById('hdr-gold').textContent = G.gold;
+  updateBars();
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function fieldMsg(txt) {
+  document.getElementById('field-msg').innerHTML = txt;
+}
+function battleMsg(txt) {
+  document.getElementById('battle-msg').innerHTML = txt;
+}
+function rand(a, b) { return Math.floor(Math.random()*(b-a+1))+a; }
+
+// ============================================================
+// CANVAS MAP
+// ============================================================
+const TILE_PX = 23;
+let mapCtx;
+
+function initCanvas() {
+  const c = document.getElementById('map-canvas');
+  c.width  = MAP_W * TILE_PX;
+  c.height = MAP_H * TILE_PX;
+  mapCtx = c.getContext('2d');
+  drawMap();
+}
+
+function drawMap() {
+  if(!mapCtx) return;
+  mapCtx.font = '14px monospace';
+  mapCtx.textAlign = 'center';
+  mapCtx.textBaseline = 'middle';
+
+  for(let y=0;y<MAP_H;y++) {
+    for(let x=0;x<MAP_W;x++) {
+      const t = RAW_MAP[y][x];
+      mapCtx.fillStyle = TCOLORS[t];
+      mapCtx.fillRect(x*TILE_PX, y*TILE_PX, TILE_PX, TILE_PX);
+
+      // special tile icons
+      if(t===3||t===4||t===5||t===6||t===9) {
+        mapCtx.font = '14px serif';
+        mapCtx.fillText(TCHAR[t], x*TILE_PX+TILE_PX/2, y*TILE_PX+TILE_PX/2+1);
+      } else if(t===1) {
+        mapCtx.fillStyle='#bbb';
+        mapCtx.font='11px monospace';
+        mapCtx.fillText('▲', x*TILE_PX+TILE_PX/2, y*TILE_PX+TILE_PX/2+1);
+      } else if(t===2) {
+        mapCtx.fillStyle='#7af';
+        mapCtx.font='11px monospace';
+        mapCtx.fillText('≋', x*TILE_PX+TILE_PX/2, y*TILE_PX+TILE_PX/2+1);
+      }
+    }
+  }
+  // draw hero
+  mapCtx.font = '16px serif';
+  mapCtx.fillText('🧙', G.x*TILE_PX+TILE_PX/2, G.y*TILE_PX+TILE_PX/2+1);
+}
+
+// ============================================================
+// TITLE
+// ============================================================
+function showTitle() { showScreen('title-screen'); }
+function showCredits() {
+  fieldMsg('');
+  alert('DRAGON QUEST I - FAN REMAKE\n\nOriginal: ENIX 1986\nRebuild: FC Style Engine\n\nCreated for training purposes.');
+}
+
+// ============================================================
+// NAME INPUT
+// ============================================================
+let heroName = '';
+function startNewGame() {
+  heroName = '';
+  showScreen('name-screen');
+  buildKanaGrid();
+  updateNameDisplay();
+}
+function buildKanaGrid() {
+  const g = document.getElementById('kana-grid');
+  g.innerHTML = KANA.map(k =>
+    `<button class="kana-btn" onclick="addChar('${k}')">${k}</button>`
+  ).join('');
+}
+function updateNameDisplay() {
+  document.getElementById('name-display').textContent =
+    heroName.padEnd(4, '＿').substring(0,4);
+}
+function addChar(c) {
+  if(heroName.length >= 4) return;
+  heroName += c;
+  updateNameDisplay();
+}
+function delChar() {
+  heroName = heroName.slice(0,-1);
+  updateNameDisplay();
+}
+function confirmName() {
+  if(!heroName.trim()) heroName = 'ゆうしゃ';
+  initGame(heroName);
+  showScreen('field-screen');
+  initCanvas();
+  updateFieldUI();
+  fieldMsg(`ゆうしゃ ${G.name} の<br>ぼうけんが はじまった！`);
+}
+
+// ============================================================
+// FIELD MOVEMENT
+// ============================================================
+function move(dx, dy) {
+  if(G.inBattle) return;
+  const nx = G.x + dx, ny = G.y + dy;
+  if(nx<0||nx>=MAP_W||ny<0||ny>=MAP_H) return;
+  const t = RAW_MAP[ny][nx];
+  if(t===TILE.MOUNTAIN||t===TILE.WATER) {
+    fieldMsg('そこへは すすめません。');
+    return;
+  }
+  G.x = nx; G.y = ny;
+  G.steps++;
+  drawMap();
+
+  const key = `${nx},${ny}`;
+  if(LOCATIONS[key]) {
+    const loc = LOCATIONS[key];
+    fieldMsg(loc.msg || 'ここは ' + loc.name + ' だ。');
+    document.getElementById('field-loc').textContent = '📍 ' + loc.name;
+    if(loc.type==='castle' && loc.heal) {
+      // Castle auto-heals
+    }
+    return;
+  }
+
+  // Random encounter
+  if(TENC[t] && Math.random() < 0.18) {
+    const areas = TENC_LV[t] || [0,1,2];
+    startBattle(t, areas);
+    return;
+  }
+
+  const msgs = [
+    'へいげんを あるいた。',
+    'しずかだ…',
+    'かぜが ふいている。',
+    'あしが いたい…',
+  ];
+  fieldMsg(msgs[G.steps % msgs.length]);
+  updateFieldUI();
+}
+
+function interact() {
+  const key = `${G.x},${G.y}`;
+  const loc = LOCATIONS[key];
+  if(loc) {
+    enterLocation(loc, key);
+  } else {
+    // Check adjacent
+    const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+    for(const [dx,dy] of dirs) {
+      const k = `${G.x+dx},${G.y+dy}`;
+      if(LOCATIONS[k]) { enterLocation(LOCATIONS[k], k); return; }
+    }
+    fieldMsg('ここには なにも ない。');
+  }
+}
+
+function enterLocation(loc, key) {
+  if(loc.type==='castle') {
+    G.hp = G.mhp; G.mp = G.mmp;
+    updateFieldUI();
+    fieldMsg(`${loc.npc}:「${loc.msg}」<br>HPとMPが かいふくした！`);
+  } else if(loc.type==='town') {
+    openTown(loc);
+  } else if(loc.type==='cave') {
+    fieldMsg(loc.msg);
+  } else if(loc.type==='boss') {
+    fieldMsg(loc.msg);
+    setTimeout(()=>{ startBossBattle(); }, 1200);
+  }
+}
+
+// ============================================================
+// TOWN / SHOP
+// ============================================================
+function openTown(loc) {
+  showScreen('town-screen');
+  document.getElementById('town-title').textContent = '📍 ' + loc.name;
+  document.getElementById('town-sprite').textContent = loc.type==='cave' ? '🌑' : '🏘️';
+  document.getElementById('town-msg').innerHTML = loc.msg || 'ようこそ！';
+  const menu = document.getElementById('town-menu');
+  menu.innerHTML = '';
+
+  const items = [];
+  if(loc.inn) items.push({ label:'🛏️ やどや（10G）', fn:'inn' });
+  if(loc.shop) items.push({ label:'🏪 どうぐや', fn:'shop1' });
+  if(loc.shop2) items.push({ label:'🏪 ぶきや', fn:'shop2' });
+  items.push({ label:'🚪 でる', fn:'exit' });
+
+  items.forEach(i => {
+    const b = document.createElement('button');
+    b.className = 'fc-btn fc-btn-gray';
+    b.style.cssText = 'width:100%;text-align:left;font-size:8px;padding:10px;';
+    b.textContent = i.label;
+    b.onclick = () => townAction(i.fn, loc);
+    menu.appendChild(b);
+  });
+}
+function townAction(fn, loc) {
+  if(fn==='inn') {
+    if(G.gold < 10) { document.getElementById('town-msg').innerHTML = 'おかねが たりない！'; return; }
+    G.gold -= 10;
+    G.hp = G.mhp; G.mp = G.mmp;
+    updateFieldUI();
+    document.getElementById('town-msg').innerHTML = 'おやすみなさい…<br>HPとMPが かいふく した！';
+  } else if(fn==='shop1') { openShop(SHOP1); }
+  else if(fn==='shop2')   { openShop(SHOP2); }
+  else { showScreen('field-screen'); updateFieldUI(); fieldMsg('まちを でた。'); }
+}
+function openShop(items) {
+  const menu = document.getElementById('town-menu');
+  document.getElementById('town-msg').innerHTML = `G:${G.gold}<br>なにを かいますか？`;
+  menu.innerHTML = '';
+  items.forEach(it => {
+    const b = document.createElement('button');
+    b.className = 'fc-btn fc-btn-gray';
+    b.style.cssText = 'width:100%;text-align:left;font-size:7px;padding:9px;';
+    b.textContent = `${it.name}  ${it.price}G  ${it.desc}`;
+    b.onclick = () => buyItem(it);
+    menu.appendChild(b);
+  });
+  const back = document.createElement('button');
+  back.className = 'fc-btn fc-btn-red';
+  back.style.cssText = 'width:100%;margin-top:8px;font-size:8px;';
+  back.textContent = '← もどる';
+  back.onclick = () => { showScreen('field-screen'); fieldMsg('またきてね！'); };
+  menu.appendChild(back);
+}
+function buyItem(it) {
+  if(G.gold < it.price) { document.getElementById('town-msg').innerHTML = 'おかねが たりない！'; return; }
+  G.gold -= it.price;
+  if(it.type==='herb') {
+    G.items.push({name:it.name, type:'herb'});
+    document.getElementById('town-msg').innerHTML = `${it.name} を かった！\nG:${G.gold}`;
+  } else if(it.type==='weapon') {
+    G.weapon = it;
+    G.atk = LEVEL_TABLE[G.lv][3] + it.atk;
+    document.getElementById('town-msg').innerHTML = `${it.name} を そうびした！\nATK+${it.atk}`;
+  } else if(it.type==='armor') {
+    G.armor = it;
+    G.def = LEVEL_TABLE[G.lv][4] + it.def;
+    document.getElementById('town-msg').innerHTML = `${it.name} を そうびした！\nDEF+${it.def}`;
+  }
+  updateFieldUI();
+}
+
+// ============================================================
+// FIELD COMMANDS
+// ============================================================
+function cmdTalk() {
+  const key = `${G.x},${G.y}`;
+  const loc = LOCATIONS[key];
+  if(loc) fieldMsg(loc.msg);
+  else fieldMsg('だれも いない。');
+}
+function cmdSearch() {
+  const msgs = [
+    'ここには なにも なかった。',
+    '… … …',
+    'かぜの おとが する。',
+    'アイテムは みつからなかった。',
+  ];
+  if(G.x===10 && G.y===5) {
+    G.items.push({name:'まほうのかぎ',type:'key'});
+    fieldMsg('やくそうを みつけた！');
+    G.items.push({name:'やくそう',type:'herb'});
+  } else {
+    fieldMsg(msgs[rand(0,msgs.length-1)]);
+  }
+}
+function cmdItem() {
+  if(!G.items.length) { fieldMsg('どうぐは もっていない。'); return; }
+  const it = G.items.find(i=>i.type==='herb');
+  if(it) {
+    G.items.splice(G.items.indexOf(it),1);
+    const heal = Math.min(30, G.mhp - G.hp);
+    G.hp = Math.min(G.mhp, G.hp+30);
+    updateFieldUI();
+    fieldMsg(`${it.name} をつかった！<br>HPが ${heal} かいふくした！`);
+  } else {
+    fieldMsg(`もちもの: ${G.items.map(i=>i.name).join('、')}`);
+  }
+}
+function cmdStatus() {
+  fieldMsg(
+    `${G.name}  Lv:${G.lv}<br>` +
+    `HP:${G.hp}/${G.mhp}  MP:${G.mp}/${G.mmp}<br>` +
+    `ATK:${G.atk}  DEF:${G.def}<br>` +
+    `EXP:${G.exp}  G:${G.gold}G`
+  );
+}
+
+// ============================================================
+// BATTLE
+// ============================================================
+function pickEnemy(tileType, areas) {
+  const pool = Object.values(ENEMIES).filter(e => e.area.some(a=>areas.includes(a)));
+  return JSON.parse(JSON.stringify(pool[rand(0, pool.length-1)]));
+}
+
+function startBattle(tileType, areas) {
+  G.inBattle = true;
+  G.currentEnemy = pickEnemy(tileType, areas);
+  G.battlePhase = 'select';
+  showScreen('battle-screen');
+  document.getElementById('b-enemy-name').textContent = G.currentEnemy.name;
+  document.getElementById('b-enemy-sprite').textContent = G.currentEnemy.sprite;
+  document.getElementById('b-hero-name').textContent = G.name;
+  updateBattleUI();
+  battleMsg(`${G.currentEnemy.name}が<br>あらわれた！`);
+  enableBattleCmds(true);
+}
+
+function startBossBattle() {
+  G.inBattle = true;
+  G.currentEnemy = JSON.parse(JSON.stringify(ENEMIES.ryuoh));
+  G.battlePhase = 'select';
+  showScreen('battle-screen');
+  document.getElementById('b-enemy-name').textContent = G.currentEnemy.name;
+  document.getElementById('b-enemy-sprite').textContent = G.currentEnemy.sprite;
+  document.getElementById('b-hero-name').textContent = G.name;
+  updateBattleUI();
+  battleMsg(`りゅうおうが あらわれた！<br>「よくぞ ここまで きた…<br>しかし きさまは ここで<br>おわりだ！」`);
+  enableBattleCmds(true);
+}
+
+function updateBattleUI() {
+  document.getElementById('b-enemy-hp').textContent = Math.max(0, G.currentEnemy.hp);
+  document.getElementById('b-hero-hp').textContent  = G.hp;
+  document.getElementById('b-hero-mhp').textContent = G.mhp;
+  document.getElementById('b-hero-mp').textContent  = G.mp;
+  document.getElementById('b-hero-mmp').textContent = G.mmp;
+  updateBars();
+}
+
+function enableBattleCmds(on) {
+  document.querySelectorAll('#battle-cmds button').forEach(b=>b.disabled=!on);
+}
+
+async function battleCmd(cmd) {
+  if(G.battlePhase !== 'select') return;
+  G.battlePhase = 'anim';
+  enableBattleCmds(false);
+
+  if(cmd==='attack') {
+    await heroAttack();
+  } else if(cmd==='spell') {
+    await heroSpell();
+  } else if(cmd==='item') {
+    await heroItem();
+  } else if(cmd==='run') {
+    await heroRun();
+    return;
+  }
+
+  if(G.currentEnemy && G.currentEnemy.hp > 0) {
+    await wait(600);
+    await enemyAttack();
+  }
+
+  if(G.hp <= 0) { gameOver(); return; }
+  G.battlePhase = 'select';
+  enableBattleCmds(true);
+}
+
+function wait(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+async function heroAttack() {
+  const dmg = Math.max(1, G.atk - Math.floor(G.currentEnemy.def*0.6) + rand(-2,3));
+  G.currentEnemy.hp -= dmg;
+  battleMsg(`${G.name}の こうげき！<br>${G.currentEnemy.name}に<br>${dmg}の ダメージ！`);
+  await wait(700);
+  updateBattleUI();
+
+  if(G.currentEnemy.hp <= 0) {
+    await wait(400);
+    await enemyDefeated();
+  }
+}
+
+async function heroSpell() {
+  // Available spells by level
+  if(G.lv >= 3 && G.mp >= 3) {
+    const dmg = rand(20, 35) + G.lv * 3;
+    G.mp -= 3;
+    G.currentEnemy.hp -= dmg;
+    battleMsg(`${G.name}は メラを となえた！<br>🔥 ${G.currentEnemy.name}に<br>${dmg}の ダメージ！`);
+    await wait(700);
+    updateBattleUI();
+    if(G.currentEnemy.hp <= 0) { await wait(400); await enemyDefeated(); }
+  } else if(G.lv >= 2 && G.mp >= 2) {
+    const heal = rand(20,30);
+    G.mp -= 2;
+    G.hp = Math.min(G.mhp, G.hp + heal);
+    battleMsg(`${G.name}は ホイミを となえた！<br>✨ HPが ${heal} かいふく した！`);
+    await wait(700);
+    updateBattleUI();
+  } else if(G.mp < 2) {
+    battleMsg('MPが たりない！');
+    await wait(600);
+  } else {
+    battleMsg('まだ じゅもんを<br>おぼえていない！');
+    await wait(600);
+  }
+}
+
+async function heroItem() {
+  const herb = G.items.find(i=>i.type==='herb');
+  if(herb) {
+    G.items.splice(G.items.indexOf(herb),1);
+    const heal = Math.min(30, G.mhp-G.hp);
+    G.hp = Math.min(G.mhp, G.hp+30);
+    battleMsg(`${herb.name} をつかった！<br>HPが ${heal} かいふく した！`);
+    await wait(700);
+    updateBattleUI();
+  } else {
+    battleMsg('どうぐが ない！');
+    await wait(600);
+  }
+}
+
+async function heroRun() {
+  if(G.currentEnemy.name==='りゅうおう') {
+    battleMsg('にげられない！');
+    await wait(600);
+    await enemyAttack();
+    if(G.hp<=0){gameOver();return;}
+    G.battlePhase='select';
+    enableBattleCmds(true);
+    return;
+  }
+  if(Math.random() < 0.5) {
+    battleMsg('うまく にげられた！');
+    await wait(800);
+    endBattle(false);
+  } else {
+    battleMsg('にげられなかった！');
+    await wait(600);
+    await enemyAttack();
+    if(G.hp<=0){gameOver();return;}
+    G.battlePhase='select';
+    enableBattleCmds(true);
+  }
+}
+
+async function enemyAttack() {
+  let dmg = Math.max(1, G.currentEnemy.atk - Math.floor(G.def*0.5) + rand(-2,2));
+  // Boss special
+  if(G.currentEnemy.name==='りゅうおう' && Math.random()<0.3) {
+    dmg = Math.floor(dmg * 1.8);
+    battleMsg(`りゅうおうの<br>いかずちのまほう！⚡<br>あなたは ${dmg}の ダメージ！`);
+  } else {
+    battleMsg(`${G.currentEnemy.name}の こうげき！<br>あなたは ${dmg}の ダメージを うけた！`);
+  }
+  G.hp = Math.max(0, G.hp - dmg);
+  await wait(700);
+  updateBattleUI();
+}
+
+async function enemyDefeated() {
+  const e = G.currentEnemy;
+  const isBoss = e.name==='りゅうおう';
+  battleMsg(`${e.name}を たおした！<br>${e.exp}EXP と ${e.gold}Gを てにいれた！`);
+  G.exp  += e.exp;
+  G.gold += e.gold;
+  await wait(900);
+
+  if(isBoss) {
+    showScreen('ending-screen');
+    return;
+  }
+  checkLevelUp();
+  await wait(300);
+  endBattle(true);
+}
+
+function checkLevelUp() {
+  const next = LEVEL_TABLE[G.lv+1];
+  if(!next) return;
+  if(G.exp >= next[0]) {
+    G.lv++;
+    const lt = LEVEL_TABLE[G.lv];
+    const oldMhp=G.mhp, oldMmp=G.mmp, oldAtk=G.atk, oldDef=G.def;
+    G.mhp = lt[1]; G.mmp = lt[2];
+    G.atk = lt[3] + (G.weapon ? G.weapon.atk : 0);
+    G.def = lt[4] + (G.armor  ? G.armor.def  : 0);
+    G.hp = G.mhp; G.mp = G.mmp;
+
+    document.getElementById('lv-stats').innerHTML =
+      `レベル → ${G.lv}<br>` +
+      `MHP: ${oldMhp} → ${G.mhp}<br>` +
+      `MMP: ${oldMmp} → ${G.mmp}<br>` +
+      `ATK: ${oldAtk} → ${G.atk}<br>` +
+      `DEF: ${oldDef} → ${G.def}`;
+    document.getElementById('levelup-overlay').classList.add('active');
+  }
+}
+
+function closeLevelup() {
+  document.getElementById('levelup-overlay').classList.remove('active');
+}
+
+function endBattle(won) {
+  G.inBattle = false;
+  G.currentEnemy = null;
+  showScreen('field-screen');
+  updateFieldUI();
+  drawMap();
+  if(won) fieldMsg('せんとうに かった！<br>ふたたび たびを つづけよう。');
+  else     fieldMsg('うまく のがれた！');
+}
+
+function gameOver() {
+  G.inBattle = false;
+  showScreen('gameover-screen');
+}
+
+function revive() {
+  G.hp = Math.floor(G.mhp * 0.5);
+  G.mp = Math.floor(G.mmp * 0.5);
+  G.x = 2; G.y = 3;
+  showScreen('field-screen');
+  updateFieldUI();
+  initCanvas();
+  fieldMsg(`${G.name}は おじょうに もどった。<br>もう いちど ちからを ためよう！`);
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('field-screen').classList.contains('active')) return;
+  const k = e.key;
+  if(k==='ArrowUp'   ||k==='w'||k==='W') move(0,-1);
+  if(k==='ArrowDown' ||k==='s'||k==='S') move(0,1);
+  if(k==='ArrowLeft' ||k==='a'||k==='A') move(-1,0);
+  if(k==='ArrowRight'||k==='d'||k==='D') move(1,0);
+  if(k===' '||k==='Enter') interact();
+  if(k==='z'||k==='Z') cmdItem();
+});
+
+// ============================================================
+// BOOT
+// ============================================================
+window.addEventListener('load', () => {
+  showScreen('title-screen');
+});
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRAGON QUEST I</title>
+<title>ANCIENT BLADE</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -409,7 +409,7 @@ body::after {
 .lv-title { font-size: 14px; color: var(--fc-yellow); margin-bottom: 12px; }
 .lv-stats { font-size: 9px; line-height: 2.5; color: var(--fc-cyan); }
 </style>
-    <meta property="og:title" content="DRAGON QUEST I">
+    <meta property="og:title" content="ANCIENT BLADE">
     <meta property="og:description" content="スマホ・PCのブラウザで遊べる無料ゲームです。インストール不要！">
     <meta property="og:url" content="https://titan11111.github.io/1203-dragon-quest1/">
     <meta property="og:type" content="website">
@@ -421,9 +421,9 @@ body::after {
 <!-- ===== TITLE ===== -->
 <div id="title-screen" class="screen active">
   <div class="title-logo">
-    <span class="title-en">ENIX PRESENTS</span>
-    <div class="title-jp">DRAGON</div>
-    <div class="title-jp">QUEST</div>
+    <span class="title-en">TITANS STUDIO</span>
+    <div class="title-jp">ANCIENT</div>
+    <div class="title-jp">BLADE</div>
     <div class="title-num">I</div>
   </div>
   <div class="title-hero">🧙</div>
@@ -442,7 +442,7 @@ body::after {
     </div>
   </div>
   <div style="margin-top:16px;font-size:7px;color:var(--fc-gray);">
-    ©1986 CHUNSOFT / ENIX (FAN REMAKE)
+    ©2024 TITANS STUDIO
   </div>
 </div>
 
@@ -491,7 +491,7 @@ body::after {
     <div class="stat-label">EXP</div><div class="stat-val" id="f-exp">0</div>
     <div class="stat-label" style="color:var(--fc-yellow)">つぎのLv</div><div class="stat-val" id="f-next">7</div>
   </div>
-  <div class="field-msg" id="field-msg">ここは たんていきょうのしろ。<br>りゅうおうをたおしに ゆくがよい！</div>
+  <div class="field-msg" id="field-msg">ここは ひかりのしろ。<br>だいまおうをたおしに ゆくがよい！</div>
   <div class="field-cmds">
     <button class="fc-btn fc-btn-gray" onclick="cmdTalk()">はなす</button>
     <button class="fc-btn fc-btn-gray" onclick="cmdSearch()">しらべる</button>
@@ -514,7 +514,7 @@ body::after {
 <div id="battle-screen" class="screen">
   <div class="battle-top">
     <div class="battle-enemy-box">
-      <div class="battle-name enemy-name" id="b-enemy-name">スライム</div>
+      <div class="battle-name enemy-name" id="b-enemy-name">ゼリーぼう</div>
       <span class="enemy-sprite" id="b-enemy-sprite">🟢</span>
       <div class="battle-stat">HP: <span id="b-enemy-hp">10</span></div>
     </div>
@@ -555,7 +555,7 @@ body::after {
   <div class="end-title">🎉 おめでとう！</div>
   <div style="font-size:28px;margin:10px 0">🐉💥🧙</div>
   <div class="go-msg">
-    りゅうおうは たおされた！<br><br>
+    だいまおうは たおされた！<br><br>
     ゆうしゃよ、きみは<br>
     せかいを すくった！<br><br>
     ひかりが せかいを<br>
@@ -611,13 +611,13 @@ const LEVEL_TABLE = [
 ];
 
 const ENEMIES = {
-  slime:    { name:'スライム',  sprite:'🟢', hp:8,  atk:4,  def:2, exp:2, gold:2,  area:[0,1,2] },
-  drakee:   { name:'ドラキー',  sprite:'🦇', hp:14, atk:7,  def:3, exp:4, gold:4,  area:[1,2,3] },
-  magician: { name:'まほうつかい',sprite:'🧝',hp:20, atk:11, def:5, exp:7, gold:8,  area:[2,3] },
-  knight:   { name:'まかいきし', sprite:'⚔️', hp:35, atk:18, def:10,exp:14,gold:16, area:[3,4] },
-  golem:    { name:'ゴーレム',   sprite:'🗿', hp:50, atk:24, def:16,exp:22,gold:24, area:[4] },
-  dragon:   { name:'ドラゴン',   sprite:'🐲', hp:65, atk:35, def:20,exp:40,gold:50, area:[5] },
-  ryuoh:    { name:'りゅうおう', sprite:'🐉', hp:120,atk:55, def:35,exp:0, gold:0,  area:[6] },
+  slime:    { name:'ゼリーぼう',   sprite:'🟢', hp:8,  atk:4,  def:2, exp:2, gold:2,  area:[0,1,2] },
+  drakee:   { name:'こうもりおに', sprite:'🦇', hp:14, atk:7,  def:3, exp:4, gold:4,  area:[1,2,3] },
+  magician: { name:'じゅじゅつし', sprite:'🧝', hp:20, atk:11, def:5, exp:7, gold:8,  area:[2,3] },
+  knight:   { name:'あんこくへいし',sprite:'⚔️', hp:35, atk:18, def:10,exp:14,gold:16, area:[3,4] },
+  golem:    { name:'がんせきじん',  sprite:'🗿', hp:50, atk:24, def:16,exp:22,gold:24, area:[4] },
+  dragon:   { name:'まりゅう',     sprite:'🐲', hp:65, atk:35, def:20,exp:40,gold:50, area:[5] },
+  ryuoh:    { name:'だいまおう',   sprite:'🐉', hp:120,atk:55, def:35,exp:0, gold:0,  area:[6] },
 };
 
 // MAP (0=grass,1=mountain,2=water,3=castle,4=town,5=cave,6=dungeon,9=ryuoh)
@@ -651,11 +651,11 @@ const RAW_MAP = [
 
 // Locations: [x, y, name, type, data]
 const LOCATIONS = {
-  '2,2': { type:'castle', name:'たんていきょうのしろ', npc:'おう', msg:'ゆうしゃよ！ りゅうおうを たおして せかいを すくうのじゃ！', heal:true },
-  '4,4': { type:'town', name:'がんてつのまち', shop:true, inn:true, msg:'ようこそ がんてつのまちへ！' },
-  '8,8': { type:'town', name:'ほのおのまち', shop2:true, inn:true, msg:'ほのおの まちへ ようこそ！' },
-  '6,6': { type:'cave', name:'まよいのどうくつ', msg:'あぶない！ あぶない！ おくには むしきのもんじゃが ひそんでいるぞ！' },
-  '14,10':{ type:'boss', name:'りゅうおうのしろ', msg:'きさま…ゆうしゃか！ ここにくるとは ちゅうぼうめ！' },
+  '2,2': { type:'castle', name:'ひかりのしろ', npc:'おう', msg:'ゆうしゃよ！ だいまおうを たおして せかいを すくうのじゃ！', heal:true },
+  '4,4': { type:'town', name:'いしのまち', shop:true, inn:true, msg:'ようこそ いしのまちへ！' },
+  '8,8': { type:'town', name:'かがりのまち', shop2:true, inn:true, msg:'かがりの まちへ ようこそ！' },
+  '6,6': { type:'cave', name:'やみのどうくつ', msg:'あぶない！ あぶない！ おくには つよい まものが ひそんでいるぞ！' },
+  '14,10':{ type:'boss', name:'やみのしろ', msg:'きさま…ゆうしゃか！ ここにくるとは ちゅうぼうめ！' },
 };
 
 const SHOP1 = [
@@ -792,7 +792,7 @@ function drawMap() {
 function showTitle() { showScreen('title-screen'); }
 function showCredits() {
   fieldMsg('');
-  alert('DRAGON QUEST I - FAN REMAKE\n\nOriginal: ENIX 1986\nRebuild: FC Style Engine\n\nCreated for training purposes.');
+  alert('ANCIENT BLADE I\n\nオリジナルRPGゲーム\nTITANS STUDIO 2024\nFC Style Engine\n\nGitHub研修デモ作品');
 }
 
 // ============================================================
@@ -1058,7 +1058,7 @@ function startBossBattle() {
   document.getElementById('b-enemy-sprite').textContent = G.currentEnemy.sprite;
   document.getElementById('b-hero-name').textContent = G.name;
   updateBattleUI();
-  battleMsg(`りゅうおうが あらわれた！<br>「よくぞ ここまで きた…<br>しかし きさまは ここで<br>おわりだ！」`);
+  battleMsg(`だいまおうが あらわれた！<br>「よくぞ ここまで きた…<br>しかし きさまは ここで<br>おわりだ！」`);
   enableBattleCmds(true);
 }
 
@@ -1122,7 +1122,7 @@ async function heroSpell() {
     const dmg = rand(20, 35) + G.lv * 3;
     G.mp -= 3;
     G.currentEnemy.hp -= dmg;
-    battleMsg(`${G.name}は メラを となえた！<br>🔥 ${G.currentEnemy.name}に<br>${dmg}の ダメージ！`);
+    battleMsg(`${G.name}は フレイムを となえた！<br>🔥 ${G.currentEnemy.name}に<br>${dmg}の ダメージ！`);
     await wait(700);
     updateBattleUI();
     if(G.currentEnemy.hp <= 0) { await wait(400); await enemyDefeated(); }
@@ -1130,7 +1130,7 @@ async function heroSpell() {
     const heal = rand(20,30);
     G.mp -= 2;
     G.hp = Math.min(G.mhp, G.hp + heal);
-    battleMsg(`${G.name}は ホイミを となえた！<br>✨ HPが ${heal} かいふく した！`);
+    battleMsg(`${G.name}は キュアを となえた！<br>✨ HPが ${heal} かいふく した！`);
     await wait(700);
     updateBattleUI();
   } else if(G.mp < 2) {
@@ -1158,7 +1158,7 @@ async function heroItem() {
 }
 
 async function heroRun() {
-  if(G.currentEnemy.name==='りゅうおう') {
+  if(G.currentEnemy.name==='だいまおう') {
     battleMsg('にげられない！');
     await wait(600);
     await enemyAttack();
@@ -1184,9 +1184,9 @@ async function heroRun() {
 async function enemyAttack() {
   let dmg = Math.max(1, G.currentEnemy.atk - Math.floor(G.def*0.5) + rand(-2,2));
   // Boss special
-  if(G.currentEnemy.name==='りゅうおう' && Math.random()<0.3) {
+  if(G.currentEnemy.name==='だいまおう' && Math.random()<0.3) {
     dmg = Math.floor(dmg * 1.8);
-    battleMsg(`りゅうおうの<br>いかずちのまほう！⚡<br>あなたは ${dmg}の ダメージ！`);
+    battleMsg(`だいまおうの<br>やみのいかずち！⚡<br>あなたは ${dmg}の ダメージ！`);
   } else {
     battleMsg(`${G.currentEnemy.name}の こうげき！<br>あなたは ${dmg}の ダメージを うけた！`);
   }
@@ -1197,13 +1197,14 @@ async function enemyAttack() {
 
 async function enemyDefeated() {
   const e = G.currentEnemy;
-  const isBoss = e.name==='りゅうおう';
+  const isBoss = e.name==='だいまおう';
   battleMsg(`${e.name}を たおした！<br>${e.exp}EXP と ${e.gold}Gを てにいれた！`);
   G.exp  += e.exp;
   G.gold += e.gold;
   await wait(900);
 
   if(isBoss) {
+    await wait(400);
     showScreen('ending-screen');
     return;
   }
